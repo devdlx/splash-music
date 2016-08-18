@@ -1,0 +1,133 @@
+<style media="screen">
+    .animated {
+        animation-duration: 1s;
+        animation-fill-mode: both;
+    }
+
+    .animated.infinite {
+        animation-iteration-count: infinite;
+    }
+
+    .animated.hinge {
+        animation-duration: 2s;
+    }
+
+    .animated.flipOutX,
+    .animated.flipOutY,
+    .animated.bounceIn,
+    .animated.bounceOut {
+        animation-duration: .75s;
+    }
+
+    @keyframes fadeOutUp {
+        from {
+            opacity: 1;
+        }
+        to {
+            opacity: 0;
+            transform: translate3d(0, -100%, 0);
+        }
+    }
+
+    .fadeOutUp {
+        animation-name: fadeOutUp;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    .fadeIn {
+        animation-name: fadeIn;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translate3d(0, 100%, 0);
+        }
+        to {
+            opacity: 1;
+            transform: none;
+        }
+    }
+
+    .fadeInUp {
+        animation-name: fadeInUp;
+    }
+
+    @keyframes fadeOutUp {
+        from {
+            opacity: 1;
+        }
+        to {
+            opacity: 0;
+            transform: translate3d(0, -100%, 0);
+        }
+    }
+
+    .fadeOutUp {
+        animation-name: fadeOutUp;
+    }
+
+
+    .splash {
+        display: block;
+        min-height: 100vh;
+        /*font-size: 16px;
+        font-weight: 600;
+        letter-spacing: 0.3em;
+        color: #202020;
+        /* padding: 0 16px; */
+        overflow: visible;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        /*top: calc(50% - 16px);*/
+        bottom: 0;
+        /*background-color: red;*/
+        z-index: 0;
+    }
+
+    .splash .text.ready {
+        /*opacity: 1;*/
+        -webkit-animation-duration: .300s;
+    }
+
+    .splash .text {
+        font-size: 9vw;
+        text-align: center;
+        margin: 0;
+        padding: 0;
+        position: absolute;
+        left: 16px;
+        right: 16px;
+        /*top: calc(50% - 100px);*/
+        top: calc(50% - 9vw);
+        /*bottom: 0;*/
+        /*background-color: blue;*/
+        z-index: 2;
+        opacity: 0;
+        /*-webkit-animation-delay: 2s;*/
+        /*-webkit-animation-iteration-count: infinite;*/
+    }
+
+    .splash .text img {
+        width: 100%;
+    }
+
+    .content {
+        z-index: 1;
+        opacity: 0;
+    }
+
+    .content.unresolved {
+        opacity: 0;
+    }
+</style>

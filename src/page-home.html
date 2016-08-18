@@ -1,0 +1,600 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/app-route/app-location.html">
+<link rel="import" href="../../bower_components/app-layout/app-grid/app-grid-style.html">
+<link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+
+<!-- <link rel="import" href="splash-button.html"> -->
+<link rel="import" href="../splash-block/splash-block.html">
+<link rel="import" href="../splash-input/splash-input.html">
+<link rel="import" href="../splash-firebase/splash-firebase.html">
+<!-- <link rel="import" href="../splash-soundcloud/splash-soundcloud.html"> -->
+
+
+<dom-module id="page-home">
+
+    <template>
+
+        <style include="splash-button splash-input app-grid-style">
+            :host {
+                display: block;
+                /*min-height: calc(100vh+ 64px);*/
+            }
+
+            h1,
+            h2 {
+                margin: 0;
+            }
+
+            .item-link {
+                outline: none;
+                margin-bottom: 16px;
+                padding: 0 16px 0 16px
+            }
+
+            .item-link> splash-block::after {
+                display: block;
+                content: '';
+                position: absolute;
+                transition-property: opacity;
+                transition-duration: 0s;
+                transition-delay: 90ms;
+                pointer-events: none;
+                opacity: 0;
+                top: 0px;
+                left: 0px;
+                right: 0px;
+                bottom: 0px;
+                outline: #2196F3 auto 5px;
+                outline: -moz-mac-focusring auto 5px;
+                outline: -webkit-focus-ring-color auto 5px;
+            }
+
+            .item-link:focus> splash-block::after {
+                opacity: 1;
+            }
+
+            splash-block {
+                --splash-block-text: {
+                    color: white;
+                    background: rgba(0, 0, 0, 0.33);
+                }
+                ;
+            }
+
+            paper-fab.fab-add {
+                position: fixed;
+                bottom: 16px;
+                right: 16px;
+                --paper-fab-background: var(--app-accent-color);
+                --paper-fab-keyboard-focus-background: var(--paper-light-blue-900);
+                z-index: 6;
+            }
+
+            paper-fab.fab-add {
+                font-size: 28px;
+                line-height: 24px;
+            }
+
+            splash-input,
+            splash-select {
+                font-size: 16px;
+            }
+
+            splash-select {
+                margin-bottom: 20px;
+            }
+
+            .grid {
+                margin-top: 40px;
+                @apply(--layout-horizontal);
+            }
+
+            .grid> section {
+                @apply(--layout-flex);
+            }
+
+            .grid> section:not(:first-child) {
+                margin-left: 80px;
+            }
+
+            .row {
+                @apply(--layout-horizontal);
+                @apply(--layout-end);
+            }
+
+            .column {
+                @apply(--layout-vertical);
+            }
+
+            .row> .flex,
+            .input-row> * {
+                @apply(--layout-flex);
+            }
+
+            .input-row> *:not(:first-child) {
+                margin-left: 8px;
+            }
+
+            .splash-select-label {
+                line-height: 20px;
+            }
+
+            .order-summary-row {
+                line-height: 24px;
+            }
+
+            .total-row {
+                font-weight: 500;
+                margin: 30px 0;
+            }
+
+            iron-pages {
+                padding: 0 8px;
+                /*hack FFF*/
+                margin-top: -64px;
+            }
+
+            header,
+            .grid> section {
+                margin-bottom: 32px;
+            }
+
+            #importButton {
+                margin: 20px 0;
+                margin-left: 24px;
+            }
+
+            .save-image {
+                height: 400px;
+            }
+
+            @media (min-width: 639px) {
+                iron-pages {
+                    padding: 24px;
+                }
+            }
+
+            @media (max-width: 1023px) {
+                .grid {
+                    display: block;
+                    margin-top: 0;
+                }
+                .grid> section:not(:first-child) {
+                    margin-left: 0;
+                }
+            }
+
+            :host {
+                display: block;
+                --app-grid-columns: 2;
+                --app-grid-gutter: 10px;
+                --app-grid-expandible-item-columns: 2;
+                --paper-icon-button-ink-color: white;
+                --app-grid-item-height: 100%;
+            }
+
+            ul {
+                padding: 0;
+                list-style: none;
+            }
+
+            .centered-container {
+                max-width: 1000px;
+                margin: 0 auto;
+            }
+
+            .item {
+                height: 250px;
+                position: relative;
+                background-color: white;
+                background-size: cover;
+                background-position: center center;
+            }
+
+            .item:nth-child(5n+ 1) {
+                height: 30vmax;
+                @apply(--app-grid-expandible-item);
+            }
+
+            .item-title {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background-color: rgba(0, 0, 0, 0.2);
+                color: white;
+                font-weight: 400;
+                padding: 16px;
+            }
+
+            @media(max-width: 799px) {
+                .centered-container {
+                    /*margin: 10px 5px;*/
+                }
+                :host {
+                    --app-grid-columns: 2;
+                    --app-grid-gutter: 5px;
+                    /*--app-grid-item-height: 200px;*/
+                }
+            }
+        </style>
+
+
+        <app-route route="[[route]]" data="{{routeDataDetail}}"></app-route>
+
+        <splash-firebase id="dlxfirebase" query="/items" items="{{items}}"></splash-firebase>
+
+        <!-- <splash-soundcloud id="dlxsoundcloud"></splash-soundcloud> -->
+        <!-- <iron-ajax auto url="https://api.soundcloud.com/tracks?client_id=" params='{"part":"snippet", "q":"polymer", "key": "AIzaSyAuecFZ9xJXbGDkQYWBmYrtzOGJD-iDIgI", "type": "video"}' handle-as="json" last-response="{{ajaxResponse}}"></iron-ajax> -->
+
+
+        <a href="/?page=add" class="link-add" hidden$="[[_computeFabShow(page)]]">
+            <paper-fab title="Add Item" class="fab-add" iconFFF="add" label="+"></paper-fab>
+        </a>
+
+
+        <iron-pages id="pages" role="main" selected="[[page]]" attr-for-selected="page" selected-attribute="visible">
+            <div class="centered-container" page="home">
+                <ul class="app-grid">
+                    <template is="dom-repeat" items="[[items]]">
+                        <li class="item" style="background-image: url({{item.image}});">
+                            <div class="item-title">{{item.title}}</div>
+                        </li>
+                    </template>
+                </ul>
+            </div>
+
+            <div class="layout vertical" page="home1" class="section">
+                <template is="dom-repeat" items="[[items]]" strip-whitespace>
+                    <a class="item-link" href="{{item.link}}">
+                        <splash-block alt="[[item.title]]" placeholder-img="" image="{{item.image}}">
+                            <h1 bottom>{{item.title}}</h1>
+                        </splash-block>
+                    </a>
+                </template>
+            </div>
+
+            <div page="add" class="section">
+                <form id="newItemForm" is="iron-form" method="post" action="/" on-iron-form-presubmit="_willSendRequest">
+
+
+                    <header>
+                        <h1>Add to Home Screen</h1>
+                        <span>Save a new item to the home screen</span>
+                    </header>
+
+                    <div class="grid">
+                        <section>
+                            <h2 id="accountInfoHeading">Import From Link</h2>
+                            <div class="row input-row">
+                                <div class="layout horizontal">
+                                    <splash-input class="flex-1">
+                                        <input type="text" id="itemLink" name="itemLink" placeholder="Link" autofocus aria-labelledby="itemLinkLabel accountInfoHeading" value="{{link::input}}">
+                                        <splash-md-decorator error-message="Invalid Link" aria-hidden="true">
+                                            <label id="itemLinkLabel">Link</label>
+                                            <splash-underline></splash-underline>
+                                        </splash-md-decorator>
+                                    </splash-input>
+                                    <splash-button id="importButton">
+                                        <input type="button" on-click="_import" value="Import" disabled$="[[importNotReady]]">
+                                    </splash-button>
+                                </div>
+                            </div>
+                        </section>
+
+
+
+                        <section>
+                            <h2>Image</h2>
+                            <div class="row input-row">
+                                <splash-block class="save-image" alt="[[item.title]]" placeholder-img="" image="{{save.image}}"></splash-block>
+                            </div>
+                            <div class="row input-row">
+                                <splash-input>
+                                    <input type="text" id="itemImage" name="itemImage" placeholder="Image" required autocomplete="item-image" value="{{save.image::input}}">
+                                    <splash-md-decorator error-message="Invalid Image" aria-hidden="true">
+                                        <label for="itemImage">Image</label>
+                                        <splash-underline></splash-underline>
+                                    </splash-md-decorator>
+                                </splash-input>
+                            </div>
+                        </section>
+
+
+                        <section>
+                            <h2>Info</h2>
+
+
+                            <div class="row input-row">
+                                <splash-input>
+                                    <input type="text" id="itemTitle" name="itemTitle" placeholder="Title" required autocomplete="item-title" value="{{save.title::input}}">
+                                    <splash-md-decorator error-message="Invalid Title" aria-hidden="true">
+                                        <label for="itemTitle">Title</label>
+                                        <splash-underline></splash-underline>
+                                    </splash-md-decorator>
+                                </splash-input>
+
+                            </div>
+
+                            <div class="row input-row">
+                                <div class="column">
+                                    <splash-input>
+                                        <textarea rows="4" id="itemDescription" name="itemDescription" placeholder="Description" autocomplete="item-description" value="{{save.description::input}}"></textarea>
+                                        <splash-md-decorator error-message="Invalid Description" aria-hidden="true">
+                                            <!-- <label for="itemDescription">Description</label> -->
+                                            <splash-underline></splash-underline>
+                                        </splash-md-decorator>
+                                    </splash-input>
+                                </div>
+                            </div>
+
+                            <!-- <div class="row input-row">
+                                <div class="column">
+                                    <label for="ccExpMonth">Expiry</label>
+                                    <splash-select>
+                                        <select id="ccExpMonth" name="ccExpMonth" required autocomplete="cc-exp-month" aria-label="Expiry month">
+                                            <option value="01" selected>Jan</option>
+                                            <option value="02">Feb</option>
+                                            <option value="03">Mar</option>
+                                            <option value="04">Apr</option>
+                                            <option value="05">May</option>
+                                            <option value="06">Jun</option>
+                                            <option value="07">Jul</option>
+                                            <option value="08">Aug</option>
+                                            <option value="09">Sep</option>
+                                            <option value="10">Oct</option>
+                                            <option value="11">Nov</option>
+                                            <option value="12">Dec</option>
+                                        </select>
+                                        <splash-md-decorator aria-hidden="true">
+                                            <splash-underline></splash-underline>
+                                        </splash-md-decorator>
+                                    </splash-select>
+                                </div>
+                                <splash-select>
+                                    <select id="ccExpYear" name="ccExpYear" required autocomplete="cc-exp-year" aria-label="Expiry year">
+                                        <option value="2016" selected>2016</option>
+                                        <option value="2017">2017</option>
+                                        <option value="2018">2018</option>
+                                        <option value="2019">2019</option>
+                                        <option value="2020">2020</option>
+                                        <option value="2021">2021</option>
+                                        <option value="2022">2022</option>
+                                        <option value="2023">2023</option>
+                                        <option value="2024">2024</option>
+                                        <option value="2025">2025</option>
+                                        <option value="2026">2026</option>
+                                    </select>
+                                    <splash-md-decorator aria-hidden="true">
+                                        <splash-underline></splash-underline>
+                                    </splash-md-decorator>
+                                </splash-select>
+                                <splash-input>
+                                    <input type="tel" id="ccCVV" name="ccCVV" pattern="\d{3,4}" placeholder="CVV" required autocomplete="cc-csc">
+                                    <splash-md-decorator error-message="Invalid CVV" aria-hidden="true">
+                                        <label for="ccCVV">CVV</label>
+                                        <splash-underline></splash-underline>
+                                    </splash-md-decorator>
+                                </splash-input>
+                            </div> -->
+                            <!-- <h2>Order Summary</h2> -->
+                        </section>
+                    </div>
+
+                    <splash-button responsive id="savbtn" hidden$="[[_computeSaveShow(changes)]]">
+                        <input type="button" on-click="_save" value="Save">
+                    </splash-button>
+                </form>
+            </div>
+
+
+        </iron-pages>
+
+
+    </template>
+
+    <script src="https://connect.soundcloud.com/sdk/sdk-3.1.2.js"></script>
+    <script>
+        var client_id = 'b99a389bf08ad6d8260a1bbb8cf2162b';
+        SC.initialize({
+            client_id: client_id,
+            redirect_uri: 'http://localhost:8080/signin?auth=soundcloud'
+        });
+
+        Polymer({
+
+            is: 'page-home',
+
+            properties: {
+
+                items: {
+                    type: Array,
+                },
+
+
+                visible: {
+                    type: Boolean,
+                    observer: '_visibleChanged'
+                },
+                page: {
+                    type: String,
+                    value: "home"
+                },
+
+                route: Object,
+
+                link: {
+                    type: String,
+                    observer: '_linkChanged',
+                    value: 'https://soundcloud.com/21savage/sets/savage-mode-21-savage-metro'
+                },
+
+                importNotReady: {
+                    type: Boolean,
+                    value: true
+                },
+
+                import: Object,
+                save: Object,
+
+            },
+
+            observers: [
+                '_changed(items)',
+                '_params(route.*)'
+            ],
+
+            _changed: function(items) {
+                // console.info(items);
+            },
+
+            _computeFabShow: function() {
+                // console.log(this.page !== "home");
+                return this.page !== "home";
+            },
+
+            _computeSaveShow: function() {
+                console.log(this.page !== "home");
+                return this.page !== "home";
+            },
+
+            _import: function() {
+
+                if (this.import.type === 'soundcloud:playlist') {
+                    // console.log(this.import.info);
+                    var info = this.import.info;
+                    var item = {};
+                    item.title = info.title;
+                    item.description = info.description;
+                    item.image = info.artwork_url.replace('-large', '-t500x500');
+                    item.imageLarge = info.artwork_url.replace('-large', '-original');
+                    // item.image = info.artwork_url;
+
+                    console.log(item);
+                    item.type = this.import.type;
+                    item.link = "soundcloud/playlist/" + this.import.id;
+                    item.soundcloud = info;
+                    this.set('save', item);
+                    this.set('import', null);
+                }
+
+            },
+
+
+            _linkChanged: function(link) {
+                // console.info(link.match('https:\/\/soundcloud.com'));
+
+                if (link.match('https:\/\/soundcloud.com')) {
+                    console.log('_soundcloudUrl');
+                    SC.resolve(link).then(function(info) {
+                        this.set('importNotReady', false);
+                        this.set('import', {
+                            type: 'soundcloud:playlist',
+                            info: info
+                        });
+                    }.bind(this));
+                }
+
+                if (link.match(/magnet:\?xt/i)) {
+                    console.log('_magnetUrl');
+                    this._magnetUrl(link);
+                    return;
+                }
+
+                if (link.match(/^[a-f0-9]{40}$/ig)) {
+                    console.log('_magnetUrl');
+
+                    this._magnetUrl(link);
+                    return;
+                }
+
+                if (link.match(/^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/)) {
+                    console.log('_youtubeUrl');
+
+                    this._youtubeUrl(link);
+                    return;
+                }
+
+
+
+            },
+            _save: function() {
+                if (this._validateForm()) {
+                    this.debounce('_submitForm', function() {
+                        var save = this.$.dlxfirebase.save('items', this.save);
+                        save.then(function() {
+                            this.page = 'home';
+                            this.set('save', null);
+                            this.set('import', null);
+                            this.set('link', '');
+                        }.bind(this));
+                    }, 1000);
+                }
+            },
+
+            _validateForm: function() {
+                var form = this.$.newItemForm;
+                var firstInvalid = false;
+
+                for (var el, i = 0; el = form.elements[i], i < form.elements.length; i++) {
+                    if (el.checkValidity()) {
+                        el.removeAttribute('aria-invalid');
+                    } else {
+                        if (!firstInvalid) {
+                            // announce error message
+                            if (el.nextElementSibling) {
+                                this.fire('announce', el.nextElementSibling.getAttribute('error-message'));
+                            }
+                            if (el.scrollIntoViewIfNeeded) {
+                                // safari, chrome
+                                el.scrollIntoViewIfNeeded();
+                            } else {
+                                // firefox, edge, ie
+                                el.scrollIntoView(false);
+                            }
+                            el.focus();
+                            firstInvalid = true;
+                        }
+                        el.setAttribute('aria-invalid', 'true');
+                    }
+                }
+
+                return !firstInvalid;
+            },
+
+            _params: function(route) {
+                if (route.path === "route.__queryParams") {
+                    // console.info(route.value.page);
+                    if (route.value.page) {
+                        this.page = route.value.page;
+                    } else {
+                        this.page = "home";
+                    }
+                }
+            },
+
+
+            _visibleChanged: function(visible) {
+                if (visible) {
+                    this.fire('change-section', {
+                        title: 'Home'
+                    });
+                }
+            },
+
+            attached: function() {
+                this._updateGridStyles = this._updateGridStyles || function() {
+                    this.updateStyles();
+                }.bind(this);
+                window.addEventListener('resize', this._updateGridStyles);
+            },
+
+            detached: function() {
+                window.removeEventListener('resize', this._updateGridStyles);
+            }
+
+        });
+    </script>
+
+</dom-module>

@@ -1,0 +1,32 @@
+<!doctype html>
+
+<html>
+  <head>
+    <title>splash-music test</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+    <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../../web-component-tester/browser.js"></script>
+
+    <link rel="import" href="../../src/splash-music/splash-music.html">
+  </head>
+  <body>
+
+    <test-fixture id="basic">
+      <template>
+        <splash-music></splash-music>
+      </template>
+    </test-fixture>
+
+    <script>
+      suite('splash-music', function() {
+
+        test('instantiating the element works', function() {
+          var element = fixture('basic');
+          assert.equal(element.is, 'splash-music');
+        });
+
+      });
+    </script>
+  </body>
+</html>
