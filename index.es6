@@ -17,34 +17,4 @@ let Polymer = {
         document.body.appendChild(e);
     }
 
-    document.addEventListener("DOMContentLoaded", function(event) {
-
-        var splashText = document.querySelector('.splash .text');
-        var content = document.querySelector('.content');
-
-
-        setTimeout(function() {
-            splashText.classList.add('fadeInUp');
-        }, 200);
-
-        window.addEventListener('WebComponentsReady', (e) => {
-            console.log('WebComponentsReady');
-        });
-
-
-        setTimeout(function() {
-            // console.log(splashText);
-            // splashText.classList.add('ready');
-            splashText.classList.add('fadeOutUp');
-            content.classList.add('fadeIn');
-        }, 3000);
-
-    });
-
-
-
-
-
-
-
 })();

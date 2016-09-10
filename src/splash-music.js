@@ -410,4 +410,4 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
     Polymer(dlxMusicApp);
 })();
-//# sourceMappingURL=splash-music-app.js.map
+//# sourceMappingURL=splash-music.js.map
